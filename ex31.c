@@ -16,7 +16,7 @@
 #define BUFFER_SIZE 1024
 
 // a macro for printing an error message
-#define PRINT_ERROR_MESSAGE(func) printf("Error in: %s\n", func);
+#define PRINT_ERROR(str) write(2, str, sizeof(str))
 
 // macro for getting the difference between lowercase and uppercase characters
 #define CASE_DIFF abs('a' - 'A')
@@ -24,7 +24,7 @@
 // a macro to close a file and print an error message in error
 #define CLOSE_FILE(fd) \
     if (close(fd) < 0) \
-    PRINT_ERROR_MESSAGE("close")
+    PRINT_ERROR("Error in: close\n")
 
 // a function to check if a char is a letter
 int isLetter(char c)
@@ -61,23 +61,23 @@ int main(int argc, char *argv[])
     int fd1 = open(argv[1], O_RDONLY);
     if (fd1 < 0)
     {
-        PRINT_ERROR_MESSAGE("open");
+        PRINT_ERROR("Error in: open\n");
         return ERROR;
     }
     int fd2 = open(argv[2], O_RDONLY);
     if (fd2 < 0)
     {
         // closing the first file descriptor in case of an error
-        CLOSE_FILE(fd1)
-        PRINT_ERROR_MESSAGE("open");
+        CLOSE_FILE(fd1);
+        PRINT_ERROR("Error in: open\n");
         return ERROR;
     }
 
     // if the paths are equal the files are identical
     if (strcmp(argv[1], argv[2]) == 0)
     {
-        CLOSE_FILE(fd1)
-        CLOSE_FILE(fd2)
+        CLOSE_FILE(fd1);
+        CLOSE_FILE(fd2);
         return IDENTICAL;
     }
 
@@ -86,17 +86,17 @@ int main(int argc, char *argv[])
     int bytesRead1 = read(fd1, buff1, BUFFER_SIZE);
     if (bytesRead1 < 0)
     {
-        PRINT_ERROR_MESSAGE("read");
-        CLOSE_FILE(fd1)
-        CLOSE_FILE(fd2)
+        PRINT_ERROR("Error in: read\n");
+        CLOSE_FILE(fd1);
+        CLOSE_FILE(fd2);
         return ERROR;
     }
     int bytesRead2 = read(fd2, buff2, BUFFER_SIZE);
     if (bytesRead2 < 0)
     {
-        PRINT_ERROR_MESSAGE("read");
-        CLOSE_FILE(fd1)
-        CLOSE_FILE(fd2)
+        PRINT_ERROR("Error in: read\n");
+        CLOSE_FILE(fd1);
+        CLOSE_FILE(fd2);
         return ERROR;
     }
 
@@ -133,8 +133,8 @@ int main(int argc, char *argv[])
             // different
             else
             {
-                CLOSE_FILE(fd1)
-                CLOSE_FILE(fd2)
+                CLOSE_FILE(fd1);
+                CLOSE_FILE(fd2);
                 return DIFFERENT;
             }
         }
@@ -162,18 +162,18 @@ int main(int argc, char *argv[])
         bytesRead1 = read(fd1, buff1 + index1, BUFFER_SIZE - index1);
         if (bytesRead1 < 0)
         {
-            PRINT_ERROR_MESSAGE("read");
-            CLOSE_FILE(fd1)
-            CLOSE_FILE(fd2)
+            PRINT_ERROR("Error in: read\n");
+            CLOSE_FILE(fd1);
+            CLOSE_FILE(fd2);
             return ERROR;
         }
         bytesRead1 += index1;
         bytesRead2 = read(fd2, buff2 + index2, BUFFER_SIZE - index2);
         if (bytesRead2 < 0)
         {
-            PRINT_ERROR_MESSAGE("read");
-            CLOSE_FILE(fd1)
-            CLOSE_FILE(fd2)
+            PRINT_ERROR("Error in: read\n");
+            CLOSE_FILE(fd1);
+            CLOSE_FILE(fd2);
             return ERROR;
         }
         bytesRead2 += index2;
@@ -187,8 +187,8 @@ int main(int argc, char *argv[])
     // if both of the files reached their and, return a result based on the isSimilar flag
     if (bytesRead1 == 0 && bytesRead2 == 0)
     {
-        CLOSE_FILE(fd1)
-        CLOSE_FILE(fd2)
+        CLOSE_FILE(fd1);
+        CLOSE_FILE(fd2);
         if (isSimilar)
         {
             return SIMILAR;
@@ -199,14 +199,14 @@ int main(int argc, char *argv[])
 
     if (bytesRead1 == 0)
     {
-        CLOSE_FILE(fd1)
+        CLOSE_FILE(fd1);
         do
         {
             while (index2 != bytesRead2)
             {
                 if (buff2[index2] != ' ' && buff2[index2] != '\n')
                 {
-                    CLOSE_FILE(fd2)
+                    CLOSE_FILE(fd2);
                     return DIFFERENT;
                 }
                 ++index2;
@@ -214,14 +214,14 @@ int main(int argc, char *argv[])
             bytesRead2 = read(fd2, buff2, BUFFER_SIZE);
             if (bytesRead2 < 0)
             {
-                PRINT_ERROR_MESSAGE("read");
-                CLOSE_FILE(fd2)
+                PRINT_ERROR("Error in: read\n");
+                CLOSE_FILE(fd2);
                 return ERROR;
             }
         } while (bytesRead2 > 0);
         if (bytesRead2 == 0)
         {
-            CLOSE_FILE(fd2)
+            CLOSE_FILE(fd2);
             return SIMILAR;
         }
         // keep reading fd2
@@ -229,14 +229,14 @@ int main(int argc, char *argv[])
 
     if (bytesRead2 == 0)
     {
-        CLOSE_FILE(fd2)
+        CLOSE_FILE(fd2);
         do
         {
             while (index1 != bytesRead1)
             {
                 if (buff1[index1] != ' ' && buff1[index1] != '\n')
                 {
-                    CLOSE_FILE(fd1)
+                    CLOSE_FILE(fd1);
                     return DIFFERENT;
                 }
                 ++index1;
@@ -244,14 +244,14 @@ int main(int argc, char *argv[])
             bytesRead1 = read(fd1, buff1, BUFFER_SIZE);
             if (bytesRead1 < 0)
             {
-                PRINT_ERROR_MESSAGE("read");
-                CLOSE_FILE(fd1)
+                PRINT_ERROR("Error in: read\n");
+                CLOSE_FILE(fd1);
                 return ERROR;
             }
         } while (bytesRead1 > 0);
         if (bytesRead1 == 0)
         {
-            CLOSE_FILE(fd1)
+            CLOSE_FILE(fd1);
             return SIMILAR;
         }
         // keep reading fd1

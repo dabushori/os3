@@ -18,7 +18,7 @@
 #define SIMILAR 3
 
 // a macro for printing an error message
-#define PRINT_ERROR_MESSAGE(func) printf("Error in: %s\n", func);
+#define PRINT_ERROR(str) write(2, str, sizeof(str))
 
 // maximum path length
 #define MAX_PATH_LENGTH 150
@@ -96,7 +96,7 @@ DIR *checkInputFiles(char *students, char *input, char *output)
         printf("Input file not exist\n");
         if (closedir(dir) < 0)
         {
-            PRINT_ERROR_MESSAGE("closedir")
+            PRINT_ERROR("Error in: closedir\n");
         }
         exit(ERROR);
     }
@@ -106,7 +106,7 @@ DIR *checkInputFiles(char *students, char *input, char *output)
         printf("Output file not exist\n");
         if (closedir(dir) < 0)
         {
-            PRINT_ERROR_MESSAGE("closedir")
+            PRINT_ERROR("Error in: closedir\n");
         }
         exit(ERROR);
     }
@@ -133,7 +133,7 @@ int compareFiles(char *file1, char *file2)
     if (child_pid < 0)
     {
         // fork error
-        PRINT_ERROR_MESSAGE("fork")
+        PRINT_ERROR("Error in: fork\n");
         exit(ERROR);
     }
     else if (child_pid == 0)
@@ -176,7 +176,7 @@ int runProgram(char *pathToOutFile, char *pathToStudentsDir, char *input, char *
     time_t start = time(NULL);
     if (child_pid < 0)
     {
-        PRINT_ERROR_MESSAGE("fork")
+        PRINT_ERROR("Error in: fork\n");
         exit(URGENT_ERROR);
     }
     else if (child_pid == 0)
@@ -186,7 +186,7 @@ int runProgram(char *pathToOutFile, char *pathToStudentsDir, char *input, char *
         int inputFd = open(input, O_RDONLY);
         if (inputFd < 0)
         {
-            PRINT_ERROR_MESSAGE("open")
+            PRINT_ERROR("Error in: open\n");
             exit(ERROR);
         }
         if (dup2(inputFd, 0) < 0)
@@ -258,7 +258,7 @@ int gradeStudent(char *pathToCFile, char *pathToStudentsDir, char *input, char *
     int child_pid = fork();
     if (child_pid < 0)
     {
-        PRINT_ERROR_MESSAGE("fork")
+        PRINT_ERROR("Error in: fork\n");
         return URGENT_ERROR;
     }
     else if (child_pid == 0)
@@ -372,7 +372,7 @@ void gradeStudents(char *students, char *input, char *output, int resultsFd, int
                 closedir(studentDir);
                 if (closedir(dir) < 0)
                 {
-                    PRINT_ERROR_MESSAGE("closedir")
+                    PRINT_ERROR("Error in: closedir\n");
                     return;
                 }
             }
@@ -385,7 +385,7 @@ void gradeStudents(char *students, char *input, char *output, int resultsFd, int
                     closedir(studentDir);
                     if (closedir(dir) < 0)
                     {
-                        PRINT_ERROR_MESSAGE("closedir")
+                        PRINT_ERROR("Error in: closedir\n");
                     }
                     return;
                 }
@@ -394,7 +394,7 @@ void gradeStudents(char *students, char *input, char *output, int resultsFd, int
                     closedir(studentDir);
                     if (closedir(dir) < 0)
                     {
-                        PRINT_ERROR_MESSAGE("closedir")
+                        PRINT_ERROR("Error in: closedir\n");
                     }
                     return;
                 }
@@ -406,7 +406,7 @@ void gradeStudents(char *students, char *input, char *output, int resultsFd, int
                         closedir(studentDir);
                         if (closedir(dir) < 0)
                         {
-                            PRINT_ERROR_MESSAGE("closedir")
+                            PRINT_ERROR("Error in: closedir\n");
                         }
                         return;
                     }
@@ -424,7 +424,7 @@ void gradeStudents(char *students, char *input, char *output, int resultsFd, int
     // close the main directory
     if (closedir(dir) < 0)
     {
-        PRINT_ERROR_MESSAGE("closedir")
+        PRINT_ERROR("Error in: closedir\n");
     }
 }
 
@@ -441,17 +441,17 @@ int main(int argc, char *argv[])
     int confFile = open(argv[1], O_RDONLY);
     if (confFile < 0)
     {
-        PRINT_ERROR_MESSAGE("open")
+        PRINT_ERROR("Error in: open\n");
         return ERROR;
     }
     char buff[MAX_CONF_FILE_LENGTH];
     int bytesRead = read(confFile, buff, MAX_CONF_FILE_LENGTH);
     if (bytesRead < 0)
     {
-        PRINT_ERROR_MESSAGE("read");
+        PRINT_ERROR("Error in: read\n");
         if (close(confFile) < 0)
         {
-            PRINT_ERROR_MESSAGE("close");
+            PRINT_ERROR("Error in: close\n");
         }
         return ERROR;
     }
@@ -462,7 +462,7 @@ int main(int argc, char *argv[])
     {
         if (close(confFile) < 0)
         {
-            PRINT_ERROR_MESSAGE("close");
+            PRINT_ERROR("Error in: close\n");
         }
         return ERROR;
     }
@@ -473,7 +473,7 @@ int main(int argc, char *argv[])
     {
         if (close(confFile) < 0)
         {
-            PRINT_ERROR_MESSAGE("close");
+            PRINT_ERROR("Error in: close\n");
         }
         return ERROR;
     }
@@ -484,7 +484,7 @@ int main(int argc, char *argv[])
     {
         if (close(confFile) < 0)
         {
-            PRINT_ERROR_MESSAGE("close");
+            PRINT_ERROR("Error in: close\n");
         }
         return ERROR;
     }
@@ -492,7 +492,7 @@ int main(int argc, char *argv[])
     output = token;
     if (close(confFile) < 0)
     {
-        PRINT_ERROR_MESSAGE("close");
+        PRINT_ERROR("Error in: close\n");
         return ERROR;
     }
 
@@ -500,16 +500,16 @@ int main(int argc, char *argv[])
     int resultsFd = open(RESULTS_FILE_NAME, O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR);
     if (resultsFd < 0)
     {
-        PRINT_ERROR_MESSAGE("open")
+        PRINT_ERROR("Error in: open\n");
         return ERROR;
     }
     int errorsFd = open(ERRORS_FILE_NAME, O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR);
     if (errorsFd < 0)
     {
-        PRINT_ERROR_MESSAGE("open")
+        PRINT_ERROR("Error in: open\n");
         if (close(resultsFd) < 0)
         {
-            PRINT_ERROR_MESSAGE("close");
+            PRINT_ERROR("Error in: close\n");
         }
         return ERROR;
     }
@@ -519,11 +519,11 @@ int main(int argc, char *argv[])
     // close the results and errors files
     if (close(resultsFd) < 0)
     {
-        PRINT_ERROR_MESSAGE("close");
+        PRINT_ERROR("Error in: close\n");
     }
     if (close(errorsFd) < 0)
     {
-        PRINT_ERROR_MESSAGE("close");
+        PRINT_ERROR("Error in: close\n");
     }
     return 0;
 }
