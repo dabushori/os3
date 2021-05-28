@@ -54,7 +54,7 @@ const char *gradeToString(int grade)
     case NO_C_FILE_GRADE:
         return "0,NO_C_FILE\n";
     case COMPLIATION_ERROR_GRADE:
-        return "10,COMPLIATION_ERROR\n";
+        return "10,COMPILATION_ERROR\n";
     case TIMEOUT_GRADE:
         return "20,TIMEOUT\n";
     case WRONG_GRADE:
